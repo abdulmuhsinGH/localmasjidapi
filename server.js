@@ -7,9 +7,6 @@ const _ = require("lodash");
 var mongoose = require("./db/db");
 //models
 var Mosque = require("./api/model/mosque.model");
-var User = require("./api/model/user.model");
-
-
 
 const app = express();
 const port = process.env.PORT;
