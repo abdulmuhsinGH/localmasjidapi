@@ -68,5 +68,19 @@ describe("Get a mosque --/mosque/:id",()=>{
         expect(res.body.prayer_times[0].name).toBe(mosques[0].prayer_times[0].name);
       })
       .end(done);
+  });
+
+  it("should get the mosque's prayer times",(done)=>{
+    var mosqueId = mosques[0]._id;
+    var mosqueName = mosques[0].name;
+    var mosqueLocation = mosques[0].location;
+
+    request(app)
+      .get(`/mosque/${mosqueId.toHexString()}/prayertimes`)
+      .expect(200)
+      .expect((res)=>{
+        expect(res.body.prayer_times[0].name).toBe(mosques[0].prayer_times[0].name);
+      })
+      .end(done);
   })
 })

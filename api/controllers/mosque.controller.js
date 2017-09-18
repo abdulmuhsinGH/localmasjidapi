@@ -44,10 +44,35 @@ var viewMosqueDetails = async(req, res)=>{
 
     res.status(200).send(mosque);
   }catch(err){
-  	res.status(400).send(mosque);
+  	res.status(400).send();
+  }
+}
+
+var viewMosquePrayerTimes = async(req, res)=>{
+  try{
+    var id = req.params.id;
+    console.log(id)
+    if (!ObjectID.isValid(id)) {
+      return res.status(404).send();
+    }
+
+    var prayerTimes = await Mosque.findOne({_id:id}, 'prayer_times');
+    
+    if(!prayerTimes){
+      return res.status(404).send();
+    }
+
+    if(req.header("x-auth")){
+      res.header("x-auth", req.header("x-auth"));
+    }
+
+    res.status(200).send(prayerTimes);
+  }catch(err){
+  	console.log(err);
+  	res.status(400).send();
   }
 }
 
 
 
-module.exports = {addMosque, viewMosqueDetails}
+module.exports = {addMosque, viewMosqueDetails,viewMosquePrayerTimes}
