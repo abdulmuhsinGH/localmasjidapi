@@ -103,7 +103,7 @@ describe("login user --/user/login", ()=>{
     var password = users[0].password;
 
     request(app)
-      .get("/user/login")
+      .post("/user/login")
       .send({username, password})
       .expect(200)
       .expect((res)=>{
@@ -133,7 +133,7 @@ describe("login user --/user/login", ()=>{
     var password = users[0].password;
 
     request(app)
-      .get("/user/login")
+      .post("/user/login")
       .send({username, password})
       .expect(400)
       .expect((res) => {
@@ -156,7 +156,7 @@ describe("login user --/user/login", ()=>{
     var password = users[0].password;
 
     request(app)
-      .get("/user/login")
+      .post("/user/login")
       .send({username, password})
       .expect(400)
       .expect((res) => {
