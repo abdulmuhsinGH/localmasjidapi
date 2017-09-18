@@ -23,6 +23,7 @@
     "express": "^4.15.3",
     "jsonwebtoken": "^7.4.3",
     "lodash": "^4.17.4",
+    "moment": "^2.18.1",
     "mongodb": "^2.2.31",
     "mongoose": "^4.11.11",
     "validator": "^8.2.0"

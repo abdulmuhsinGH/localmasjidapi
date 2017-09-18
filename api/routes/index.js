@@ -22,6 +22,7 @@ router.delete("/user/logout",authenticate, UserController.logout);
 
 /*Mosque routes*/
 router.post("/mosque/add", authenticate, MosqueController.addMosque);
+router.get("/mosque/:id", MosqueController.viewMosqueDetails);
 /*Mosque routes*/
 
 

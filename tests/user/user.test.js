@@ -19,7 +19,7 @@ describe("register users --/user/register", ()=>{
     request(app)
       .post("/user/register")
       .send({email,name,username,password})
-      .expect(200)
+      .expect(201)
       .expect((res)=>{
         expect(res.headers["x-auth"]).toExist();
         expect(res.body._id).toExist();

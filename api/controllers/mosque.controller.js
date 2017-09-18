@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const {ObjectID} = require("mongodb")
 
 var Mosque = require("../model/mosque.model");
 
@@ -13,7 +14,7 @@ var addMosque = async (req, res)=>{
     await mosque.save();
     res
       .header("x-auth", req.token)
-      .status(200)
+      .status(201)
       .send(mosque);
 
   }catch(err){
@@ -22,11 +23,31 @@ var addMosque = async (req, res)=>{
   }
   
 }
-/*
-var viewMosque = async(req, res)=>{
-  
+
+var viewMosqueDetails = async(req, res)=>{
+  try{
+    var id = req.params.id;
+    console.log(id)
+    if (!ObjectID.isValid(id)) {
+      return res.status(404).send();
+    }
+
+    var mosque = await Mosque.findOne({_id:id});
+    
+    if(!mosque){
+      return res.status(404).send();
+    }
+
+    if(req.header("x-auth")){
+      res.header("x-auth", req.header("x-auth"));
+    }
+
+    res.status(200).send(mosque);
+  }catch(err){
+  	res.status(400).send(mosque);
+  }
 }
-*/
 
 
-module.exports = {addMosque}
+
+module.exports = {addMosque, viewMosqueDetails}
