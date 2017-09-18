@@ -27,7 +27,7 @@ var addMosque = async (req, res)=>{
 var viewMosqueDetails = async(req, res)=>{
   try{
     var id = req.params.id;
-    console.log(id)
+
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();
     }
@@ -51,7 +51,7 @@ var viewMosqueDetails = async(req, res)=>{
 var viewMosquePrayerTimes = async(req, res)=>{
   try{
     var id = req.params.id;
-    console.log(id)
+
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();
     }
@@ -68,7 +68,6 @@ var viewMosquePrayerTimes = async(req, res)=>{
 
     res.status(200).send(prayerTimes);
   }catch(err){
-  	console.log(err);
   	res.status(400).send();
   }
 }

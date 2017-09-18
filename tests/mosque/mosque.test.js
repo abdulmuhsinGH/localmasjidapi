@@ -51,7 +51,7 @@ describe("Add Mosque --/mosque/add",()=>{
 
 })
 
-describe("Get a mosque --/mosque/:id",()=>{
+describe("Get information about a  mosque --/mosque/:id",()=>{
   it("should get a mosque and have details about the mosque",(done)=>{
     var mosqueId = mosques[0]._id;
     var mosqueName = mosques[0].name;
@@ -70,6 +70,15 @@ describe("Get a mosque --/mosque/:id",()=>{
       .end(done);
   });
 
+  it("should not get details of any mosque using an invalid id",(done)=>{
+    var mosqueId = "mosqueid";
+
+    request(app)
+      .get(`/mosque/${mosqueId}`)
+      .expect(404)
+      .end(done);
+  });
+
   it("should get the mosque's prayer times",(done)=>{
     var mosqueId = mosques[0]._id;
     var mosqueName = mosques[0].name;
@@ -82,5 +91,14 @@ describe("Get a mosque --/mosque/:id",()=>{
         expect(res.body.prayer_times[0].name).toBe(mosques[0].prayer_times[0].name);
       })
       .end(done);
-  })
+  });
+
+  it("should not get prayertimes of any mosque using an invalid id",(done)=>{
+    var mosqueId = "mosqueid";
+
+    request(app)
+      .get(`/mosque/${mosqueId}/prayertimes`)
+      .expect(404)
+      .end(done);
+  });
 })
