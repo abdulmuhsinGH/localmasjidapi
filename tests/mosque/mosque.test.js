@@ -88,7 +88,7 @@ describe("Get information about a  mosque --/mosque/:id",()=>{
       .get(`/mosque/${mosqueId.toHexString()}/prayertimes`)
       .expect(200)
       .expect((res)=>{
-        expect(res.body.prayer_times[0].name).toBe(mosques[0].prayer_times[0].name);
+        expect(res.body[0].name).toBe(mosques[0].prayer_times[0].name);
       })
       .end(done);
   });
