@@ -1,7 +1,7 @@
 const mongoose = require("../../db/db");
 
 var prayertimesSchema = new mongoose.Schema({ 
-  name:{type:String}, 
+  name:{type:String, minlength:3}, 
   time:{type:Date} 
 });
 
@@ -16,7 +16,7 @@ var MosqueSchema = new mongoose.Schema({
       validator:locationIsUnique,
       message:"A Mosque is already in this location"
     }},
-  prayer_times: [prayertimesSchema],
+  prayer_times: {type:[prayertimesSchema], default:[]},
   verified: {type:Boolean, default:false},
   created_at:{type:Date, default:Date.now}
 });
@@ -24,7 +24,7 @@ var MosqueSchema = new mongoose.Schema({
 function locationIsUnique(location){
   var Mosque = this;
   
-  	return new Promise((resolve,rejct)=>{
+  	return new Promise((resolve,reject)=>{
   	  resolve(true);
   	})
 

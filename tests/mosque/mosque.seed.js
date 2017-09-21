@@ -37,16 +37,28 @@ for (var i = 7; i >= 0; i--) {
       {name:"Juma",  time:moment({ hour:13, minute:00 })}]
   };
 }
+//mosque with no prayer times
+mosques[8] = {
+    _id:new ObjectID(),
+    name:"Mosque with no prayer_times",
+    description:faker.random.words(10),
+    location:[longitude, latitude]
+  };
 
 const populateMosques = (done)=>{
 
   Mosque.remove({}).then(()=>{
-    var mosqueOne = new Mosque(mosques[0]).save();
-    var mosqueTwo = new Mosque(mosques[1]).save();
-
-    return Promise.all([mosqueOne, mosqueTwo]);
+    return Mosque.create(mosques);
   }).then(()=>done()).catch((err)=>done(err));
 }
 
+const newPrayerTimes = [
+  {name:"Fajr",  time:moment({ hour:4, minute:45 })},
+  {name:"Zuhr",  time:moment({ hour:11, minute:55 })},
+  {name:"Asr",  time:moment({ hour:15, minute:30 })},
+  {name:"Maghrib",  time:moment({ hour:18, minute:20 })},
+  {name:"Isha",  time:moment({ hour:7, minute:21 })},
+  {name:"Juma",  time:moment({ hour:12, minute:50 })}];
 
-module.exports = {mosques,populateMosques}
+
+module.exports = {mosques,populateMosques, newPrayerTimes}

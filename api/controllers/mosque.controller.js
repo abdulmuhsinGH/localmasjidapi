@@ -25,6 +25,37 @@ var addMosque = async (req, res)=>{
   
 }
 
+var addPrayerTimesForAMosque = async(req, res)=>{
+  try{
+    var prayerTimes = req.body.prayertimes;
+    var mosqueId = req.params.id;
+
+    if (!ObjectID.isValid(mosqueId)) {
+      return res.status(404).send();
+    }
+
+    if(!prayerTimes){
+      return res.status(400).send();
+    }
+    
+    var mosque = await Mosque.findOneAndUpdate({_id:mosqueId}, {$set:{prayer_times:prayerTimes}}, {new:true});
+     
+    if(!mosque){
+      return res.status(404).send();
+    }
+     //await mosque.save();
+    res
+      .header("x-auth", req.token)
+      .status(200)
+      .send(mosque);
+
+  }catch(err){
+  	console.log(err);
+    res.status(400).send(err);
+  }
+  
+}
+
 var viewMosqueDetails = async(req, res)=>{
   try{
 
@@ -71,7 +102,7 @@ var viewMosquePrayerTimes = async(req, res)=>{
 
     res.status(200).send(prayerTimes);
   }catch(err){
-  	res.status(400).send();
+  	res.status(400).send(err);
   }
 }
 
@@ -102,9 +133,9 @@ var viewMosquesNearAUser = async(req, res)=>{
 
   }catch(err){
   	
-  	res.status(400).send();
+  	res.status(400).send(err);
   }
 }
 
 
-module.exports = {addMosque, viewMosqueDetails,viewMosquePrayerTimes,viewMosquesNearAUser}
+module.exports = {addMosque, viewMosqueDetails,viewMosquePrayerTimes,viewMosquesNearAUser,addPrayerTimesForAMosque}

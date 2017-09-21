@@ -6,7 +6,7 @@ const _ = require("lodash");
 const app = require("../../server");
 const Mosque = require("../../api/model/mosque.model");
 const {users} = require("../user/user.seed");
-const {mosques, populateMosques} = require("./mosque.seed");
+const {mosques, populateMosques, newPrayerTimes} = require("./mosque.seed");
 
 beforeEach(populateMosques);
 
@@ -105,7 +105,7 @@ describe("Get information about a  mosque --/mosque/:id",()=>{
 })
 
 
-describe("Get nearby mosques to a location",()=>{
+describe("Get nearby mosques to a location --/mosque/near/location",()=>{
 
   it("should get all mosques near the location",(done)=>{
 
@@ -134,6 +134,103 @@ describe("Get nearby mosques to a location",()=>{
       .expect(404)
       .end(done);
 
+  });
+
+  it("should not get any mosques near the location, if the location is invalid",(done)=>{
+
+    var userLongitude = '5.272965428713405abc';
+    var userLatitude =  '6.7917418876871105abc';
+    var userMaxDistance = '10';
+    
+    request(app)
+      .get(`/mosque/near/location?longitude=${userLongitude}&latitude=${userLatitude}&maxdistance=${userMaxDistance}`)
+      .expect(400)
+      .end(done);
+
+  });
+
+})
+
+describe("Add prayertimes for a mosque --/mosque/:id", ()=>{
+  it("should add prayertimes for a mosque with no prayertimes",(done)=>{
+    
+    var mosqueId = mosques[8]._id;
+
+    request(app)
+      .patch(`/mosque/${mosqueId}/prayertimes`)
+      .set("x-auth", users[0].tokens[0].token)
+      .send({prayertimes: newPrayerTimes})
+      .expect(200)
+      .expect((res)=>{
+      	expect(res.body.prayer_times[0].time).toExist();
+      })
+      .end((err)=>{
+        if(err){
+          return done(err);
+        }
+        Mosque.find({_id:mosqueId}).then((mosque)=>{
+          expect(mosque[0].prayer_times[0].time).toExist();
+          done();
+        }).catch((err)=>done(err));
+      });
+
+  });
+
+  it("should update prayertimes for a mosque",(done)=>{
+    
+    var mosqueId = mosques[7]._id;
+
+    request(app)
+      .patch(`/mosque/${mosqueId}/prayertimes`)
+      .set("x-auth", users[0].tokens[0].token)
+      .send({prayertimes: newPrayerTimes})
+      .expect(200)
+      .expect((res)=>{
+      	expect(res.body.prayer_times[0].time).toNotBe(mosques[7].prayer_times[0].time);
+      })
+      .end((err)=>{
+        if(err){
+          return done(err);
+        }
+        Mosque.find({_id:mosqueId}).then((mosque)=>{
+          expect(mosque[0].prayer_times[0].time).toNotBe(mosques[7].prayer_times[0].time);
+          done();
+        }).catch((err)=>done(err));
+      });
+
+  });
+
+  it("should not add prayertimes for a mosque from an unauthorized user",(done)=>{
+    
+    var mosqueId = mosques[8]._id;
+
+    request(app)
+      .patch(`/mosque/${mosqueId}/prayertimes`)
+      .send({prayertimes: newPrayerTimes})
+      .expect(401) 
+      .end(done);
+  });
+
+  it("should not add prayertimes for a mosque if prayertime is not provided",(done)=>{
+    
+    var mosqueId = mosques[8]._id;
+
+    request(app)
+      .patch(`/mosque/${mosqueId}/prayertimes`)
+      .set("x-auth", users[0].tokens[0].token)
+      .expect(400) 
+      .end(done);
+  });
+
+  it("should not add prayertimes for a mosque if mosque id is invalid",(done)=>{
+    
+    var mosqueId = "invalid1d";
+
+    request(app)
+      .patch(`/mosque/${mosqueId}/prayertimes`)
+      .set("x-auth", users[0].tokens[0].token)
+      .expect(404) 
+      .end(done);
   });
 
 })

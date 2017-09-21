@@ -1,4 +1,4 @@
-
+const validator = require("validator");
 
 var isValidCoordinates = (longitude,latitude)=>{
   if(!longitude || !latitude){
