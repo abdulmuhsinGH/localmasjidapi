@@ -2,6 +2,7 @@ const _ = require("lodash");
 const {ObjectID} = require("mongodb")
 
 var Mosque = require("../model/mosque.model");
+const {isValidCoordinates} = require("../../utils/utils");
 
 
 
@@ -54,6 +55,10 @@ var viewMosquePrayerTimes = async(req, res)=>{
   try{
     var id = req.params.id;
 
+    if(req.header("x-auth")){
+      res.header("x-auth", req.header("x-auth"));
+    }
+    
     if (!ObjectID.isValid(id)) {
       return res.status(404).send();
     }
@@ -64,10 +69,6 @@ var viewMosquePrayerTimes = async(req, res)=>{
       return res.status(404).send();
     }
 
-    if(req.header("x-auth")){
-      res.header("x-auth", req.header("x-auth"));
-    }
-
     res.status(200).send(prayerTimes);
   }catch(err){
   	res.status(400).send();
@@ -76,25 +77,34 @@ var viewMosquePrayerTimes = async(req, res)=>{
 
 var viewMosquesNearAUser = async(req, res)=>{
   try{
-    var location = req.params.location.split(',');
-    var maxDistance = req.params.distance/6371; //convert distance in kilometers to radians 
-
-    var mosques = Mosque.findAllMosquesCloseToALocationWithinMaxDistance(location,maxDistance);
+  	
+    var longitude = req.query.longitude;
+    var latitude = req.query.latitude;
+    var maxDistance = (req.query.maxdistance ? parseFloat(req.query.maxdistance) : 8);
     
-    if(!mosques){
-      return res.status(404).send();
-    }
+    maxDistance = maxDistance/6371; //convert distance in kilometers to radians
 
     if(req.header("x-auth")){
       res.header("x-auth", req.header("x-auth"));
     }
 
+    if(!isValidCoordinates(longitude, latitude)) {
+      return res.status(400).send();
+    } 
+
+    var mosques =  await Mosque.findAllMosquesCloseToALocationWithinMaxDistance(longitude, latitude, maxDistance);
+   
+    if(!mosques){
+      return res.status(404).send();
+    }
+
     res.status(200).send(mosques);
 
   }catch(err){
+  	
   	res.status(400).send();
   }
 }
 
 
-module.exports = {addMosque, viewMosqueDetails,viewMosquePrayerTimes}
+module.exports = {addMosque, viewMosqueDetails,viewMosquePrayerTimes,viewMosquesNearAUser}

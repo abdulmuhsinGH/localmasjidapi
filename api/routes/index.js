@@ -24,6 +24,7 @@ router.delete("/user/logout",authenticate, UserController.logout);
 router.post("/mosque/add", authenticate, MosqueController.addMosque);
 router.get("/mosque/:id", MosqueController.viewMosqueDetails);
 router.get("/mosque/:id/prayertimes", MosqueController.viewMosquePrayerTimes);
+router.get("/mosque/near/:id?", MosqueController.viewMosquesNearAUser);
 /*Mosque routes*/
 
 

@@ -36,7 +36,7 @@ MosqueSchema.statics.findMosqueWithDetails = function(mosqueId){
     return  Mosque.findOne({_id:mosqueId}).then((mosque)=>{
 
       if(!mosque){
-        return Promise.reject(`Mosque with this ${mosqueId} does not exist`)
+        return Promise.resovle(false)
       }
 
       return new Promise((resolve, reject)=>{
@@ -55,16 +55,20 @@ MosqueSchema.statics.findPrayerTimesOfAMosque = function(mosqueId){
 	});
 }
 
-MosqueSchema.statics.findAllMosquesCloseToALocationWithinMaxDistance = function(location,maxDistance){
+MosqueSchema.statics.findAllMosquesCloseToALocationWithinMaxDistance = function(longitude, latitude, maxDistance){
   var Mosque = this;
+  
 
-  Mosque
+  return Mosque
     .where('location')
-    .near({center:[location[0],location[1]], maxDistance:5, spherical: true})
+    .near({center:[longitude,latitude], maxDistance:maxDistance, spherical: true})
     .then((mosques)=>{
-      if(!mosques){
-        return Promise.reject(`No mosque within this ${location}`);
+      
+      if(!mosques.length){
+      
+        return Promise.resolve(false);
       }
+      
 
       return Promise.resolve(mosques);
     });

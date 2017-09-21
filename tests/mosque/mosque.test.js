@@ -1,6 +1,7 @@
 const expect = require("expect");
 const request = require("supertest");
 const {ObjectID} = require("mongodb");
+const _ = require("lodash");
 
 const app = require("../../server");
 const Mosque = require("../../api/model/mosque.model");
@@ -101,4 +102,38 @@ describe("Get information about a  mosque --/mosque/:id",()=>{
       .expect(404)
       .end(done);
   });
+})
+
+
+describe("Get nearby mosques to a location",()=>{
+
+  it("should get all mosques near the location",(done)=>{
+
+    var userLongitude = '0.24122714746340534';
+    var userLatitude =  '5.568447880542366';
+    var userMaxDistance = '10';
+    
+    request(app)
+      .get(`/mosque/near/location?longitude=${userLongitude}&latitude=${userLatitude}&maxdistance=${userMaxDistance}`)
+      .expect(200)
+      .expect((res)=>{
+        expect(res.body[0]._id).toExist();
+      })
+      .end(done);
+
+  });
+
+  it("should not get any mosques near the location",(done)=>{
+
+    var userLongitude = '5.272965428713405';
+    var userLatitude =  '6.7917418876871105';
+    var userMaxDistance = '10';
+    
+    request(app)
+      .get(`/mosque/near/location?longitude=${userLongitude}&latitude=${userLatitude}&maxdistance=${userMaxDistance}`)
+      .expect(404)
+      .end(done);
+
+  });
+
 })
