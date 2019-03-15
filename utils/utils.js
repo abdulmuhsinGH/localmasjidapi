@@ -1,6 +1,6 @@
 const validator = require("validator");
 
-var isValidCoordinates = (longitude,latitude)=>{
+const isValidCoordinates = (longitude,latitude)=>{
   if(!longitude || !latitude){
     return false;
   }
@@ -16,11 +16,6 @@ var isValidCoordinates = (longitude,latitude)=>{
   return true;
 
 };
-
-/*
-var calcDistance = (longitude1, latitude1, longitude2, latitude2)=>{
-
-}*/
 
 
 module.exports = {isValidCoordinates}

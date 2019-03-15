@@ -5,8 +5,6 @@ var Mosque = require("../model/mosque.model");
 const {isValidCoordinates} = require("../../utils/utils");
 
 
-
-
 var addMosque = async (req, res)=>{
   try{
     var body = _.pick(req.body, ["name","location"]);
@@ -41,6 +39,7 @@ var addPrayerTimesForAMosque = async(req, res)=>{
     var mosque = await Mosque.findOneAndUpdate({_id:mosqueId}, {$set:{prayer_times:prayerTimes}}, {new:true});
      
     if(!mosque){
+      
       return res.status(404).send();
     }
      //await mosque.save();
@@ -108,7 +107,7 @@ var viewMosquePrayerTimes = async(req, res)=>{
 
 var viewMosquesNearAUser = async(req, res)=>{
   try{
-  	
+
     var longitude = req.query.longitude;
     var latitude = req.query.latitude;
     var maxDistance = (req.query.maxdistance ? parseFloat(req.query.maxdistance) : 8);
@@ -120,22 +119,39 @@ var viewMosquesNearAUser = async(req, res)=>{
     }
 
     if(!isValidCoordinates(longitude, latitude)) {
-      return res.status(400).send();
+      return res.status(400).send({message:"Invalid coordinates provided"});
     } 
 
     var mosques =  await Mosque.findAllMosquesCloseToALocationWithinMaxDistance(longitude, latitude, maxDistance);
-   
+    //console.log({mosques})
     if(!mosques){
-      return res.status(404).send();
+      const {findMosquesOnGoolgleMaps} = require("../../utils/google_places");
+      let mosques = await findMosquesOnGoolgleMaps(longitude, latitude);
+      mosques = await addMosquesFromGoogle(mosques);
+
+      if(!mosques){
+        return res.status(200).send({data: mosques, message:"No mosques found around you"});
+      }
+
+      return res.status(200).send({data:mosques, message:"Success"});
     }
 
-    res.status(200).send(mosques);
+    res.status(200).send({data:mosques, message:"Success"});
 
   }catch(err){
-  	
+  	console.log(err)
   	res.status(400).send(err);
   }
 }
 
+async function addMosquesFromGoogle(mosques){
+  return mosques = mosques.map((mosque)=>{
+      name = mosque.name;
+      location = [mosque.geometry.location.lng, mosque.geometry.location.lat];
+      mosque = new Mosque({name, location})
+      mosque.save();
+      return {name, location}
+    })
+}
 
 module.exports = {addMosque, viewMosqueDetails,viewMosquePrayerTimes,viewMosquesNearAUser,addPrayerTimesForAMosque}
